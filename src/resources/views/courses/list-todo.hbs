@@ -1,0 +1,118 @@
+<form class="container mt-4" name="container-form" method="POST" action="/courses/check-all-submit">
+  <div class="row justify-content-between ">
+    <div class="col-6">
+      <a href="/courses/trash">Thùng rác{{countDeleted}}</a>
+    </div>
+    <div class="col-6 text-end">
+      <a href="/courses/create">Đăng ký khóa học</a>
+    </div>
+  </div>
+
+  <div class="d-flex align-items-center p-2">
+    <input class="form-check-input" type="checkbox" value="" id="check-all-courses">
+    <label class="form-check-label mx-2" for="check-all-courses">
+      Chọn tất cả
+    </label>
+    <select class="form-select select-checkbox mx-2" name="action" required>
+      <option value="">--Chọn--</option>
+      <option value="Xoa">Xoa</option>
+      <option value="2">Two</option>
+      <option value="3">Three</option>
+    </select>
+    <button class="btn btn-primary disabled"  id="submitCheckAll" type="submit">Thuc hien</button>
+  </div>
+
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col" colspan="2">#</th>
+        <th scope="col">name</th>
+        <th scope="col">CreatedAt</th>
+        <th scope="col">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each items}}
+      <tr>
+        <td><input class="form-check-input" type="checkbox" name="coursesId" value={{this._id}}></td>
+        <td scope="row">{{sum @index 1}}</td>
+        <td>{{this.name}}</td>
+        <td>{{this.createAt}}</td>
+        <td>
+          <a href="edit/{{this._id}}" class="btn btn-success">UPDATE</a>
+          <a href="" class="btn btn-danger" data-id={{this._id}} data-bs-toggle="modal"
+            data-bs-target="#delete">Delete</a>
+        </td>
+      </tr>
+      {{else}}
+      <tr>
+        <td colspan="4">Bạn chưa thực hiện đăng ký nào, <a href="/courses/create">Đăng ký tại đây.</a></td>
+        {{/each}}
+    </tbody>
+  </table>
+</form>
+
+<!-- Modal -->
+<div class="modal fade" id="delete" tabindex="-1" aria-labelledby="delete" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        ...
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" id="deleteConfirm">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<form name="delete-Form"> </form>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const exampleModal = document.getElementById('delete')
+    const deleteForm = document.getElementById('deleteConfirm')
+    const containerForm = document.forms['container-form']
+    const submitForm = document.forms['delete-Form']
+    exampleModal.addEventListener('show.bs.modal', function (event) {
+
+      const button = event.relatedTarget
+      const id = button.getAttribute('data-id')
+      deleteForm.onclick = function () {
+        submitForm.method = 'post'
+        submitForm.action = `delete/${id}`
+        submitForm.submit()
+      }
+    })
+
+    var checkAllCourses = $('#check-all-courses')
+    checkAllCourses.change(function () {
+      var isCheckAll = $(this).prop('checked')
+      $('input[name="coursesId"]').prop('checked', isCheckAll)
+      renderCheckAllSubmitBtn()
+    })
+
+    var checkCourse = $('input[name="coursesId"]')
+    checkCourse.change(function () {
+      var isCheckAll = $('input[name="coursesId"]:checked').length === checkCourse.length
+      checkAllCourses.prop('checked', isCheckAll)
+      renderCheckAllSubmitBtn()
+    })
+
+    function renderCheckAllSubmitBtn() {
+      var checkedCount = $('input[name="coursesId"]:checked').length
+      if(checkedCount > 0) {
+        $('#submitCheckAll').removeClass('disabled')
+      } else {
+       $('#submitCheckAll').addClass('disabled')
+      }
+    }
+
+    console.log(containerForm)
+  });
+</script>

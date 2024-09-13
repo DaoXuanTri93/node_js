@@ -1,0 +1,93 @@
+<div class="container mt-4">
+  <div class="row justify-content-between ">
+    <div class="col-6">
+      <a href="/courses/list-todo">Danh sách khóa học</a>
+    </div>
+  </div>
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">name</th>
+        <th scope="col">CreatedAt</th>
+        <th scope="col">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each items}}
+      {{#if deleted}}
+      <tr>
+        <th scope="row">{{sum @index 1}}</th>
+        <td>{{this.name}}</td>
+        <td>{{this.createAt}}</td>
+        <td>
+          <a href="" class="btn btn-primary restore" data-id={{this._id}}>Khôi phục</a>
+          <a href="" class="btn btn-danger" data-id={{this._id}} data-bs-toggle="modal" data-bs-target="#delete">Xóa
+            vĩnh viễn</a>
+        </td>
+      </tr>
+      {{/if}}
+      {{else}}
+      <tr>
+        <td colspan="4">Thùng rác đang trống</td>
+
+        {{/each}}
+    </tbody>
+  </table>
+</div>
+
+<!-- Modal Delete-->
+<div class="modal fade" id="delete" tabindex="-1" aria-labelledby="delete" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Xóa Vĩnh viễn</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Bạn chắc chắn muốn xóa vính viễn không không ?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-danger" id="deleteConfirm">Xóa Vĩnh viễn</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<form name="delete-Form"> </form>
+<form name="res-Form"> </form>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const exampleModal = document.getElementById('delete')
+    const restoreModal = $('.restore')
+
+
+    const deleteForm = document.getElementById('deleteConfirm')
+    const submitForm = document.forms['delete-Form']
+
+    exampleModal.addEventListener('show.bs.modal', function (event) {
+
+      const button = event.relatedTarget
+      const id = button.getAttribute('data-id')
+
+
+      deleteForm.onclick = function () {
+        submitForm.method = 'post'
+        submitForm.action = `trashDelete/${id}`
+        submitForm.submit()
+      }
+    })
+
+    restoreModal.click(function (e) {
+      e.preventDefault()
+      var id = $(this).data('id')
+      var form = document.forms['res-Form']
+      form.method = 'post'
+      form.action = `restore/${id}`
+      form.submit()
+    })
+  })
+</script>
